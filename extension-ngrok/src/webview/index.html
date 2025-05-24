@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeGenie</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+    <div id="root">
+        <div class="loading">Loading CodeGenie...</div>
+    </div>
+
+    <script type="module" src="/src/webview/main.tsx"></script>
+
+    <script>
+        window.addEventListener('error', (event) => {
+            console.error('Webview error:', event.error);
+            document.getElementById('root').innerHTML = `
+                <div class="error">
+                    Failed to load CodeGenie. Please try reloading the window.
+                    <br>
+                    Error: ${event.error?.message || 'Unknown error'}
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

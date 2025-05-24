@@ -1,0 +1,126 @@
+.webview-container {
+  padding: 20px;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-foreground);
+  background-color: var(--vscode-editor-background);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-lens {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+  border-radius: 4px;
+}
+
+.code-lens button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.code-lens button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.history-panel {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+}
+
+.prompt-item {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.user-prompt {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--vscode-textLink-foreground);
+}
+
+.ai-response {
+  white-space: pre-wrap;
+  background-color: var(--vscode-textCodeBlock-background);
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.input-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.input-container textarea {
+  flex: 1;
+  min-height: 60px;
+  padding: 10px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  resize: vertical;
+  font-family: var(--vscode-font-family);
+}
+
+.input-container button {
+  padding: 10px 20px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.input-container button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.upload-button {
+  background-color: var(--vscode-button-secondaryBackground) !important;
+  color: var(--vscode-button-secondaryForeground) !important;
+}
+
+.upload-button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground) !important;
+}
+
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: var(--vscode-foreground);
+}
+
+.error {
+  color: var(--vscode-errorForeground);
+  text-align: center;
+  padding: 20px;
+}
+
+.dev-indicator {
+  background-color: #ff6b35;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}

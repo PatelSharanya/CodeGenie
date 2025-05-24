@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import fetch from 'cross-fetch';
+import * as crossFetch from 'cross-fetch';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WebviewPanel } from './webviewPanel';
@@ -22,12 +22,9 @@ interface ServerConfig {
 }
 
 // Debounce function to limit API calls
-function debounce<F extends (...args: any[]) => any>(
-    func: F,
-    waitFor: number
-): (...args: Parameters<F>) => Promise<ReturnType<F>> {
+function debounce<T extends (...args: any[]) => any>(func: T, waitFor: number) {
     let timeout: NodeJS.Timeout;
-    return (...args: Parameters<F>): Promise<ReturnType<F>> =>
+    return (...args: Parameters<T>): Promise<ReturnType<T>> => 
         new Promise(resolve => {
             if (timeout) {
                 clearTimeout(timeout);
@@ -35,18 +32,19 @@ function debounce<F extends (...args: any[]) => any>(
             timeout = setTimeout(() => resolve(func(...args)), waitFor);
         });
 }
+
 export function activate(context: vscode.ExtensionContext) {
-    console.log('CodeGenie is now active!');
+    console.log('CodeGenie Ngrok is now active!');
 
     // Configuration keys
-    const CONFIG_SERVER_URL = 'codegenie.serverUrl';
-    const CONFIG_AUTOCONNECT = 'codegenie.autoConnect';
+    const CONFIG_SERVER_URL = 'codegenie-ngrok.serverUrl';
+    const CONFIG_AUTOCONNECT = 'codegenie-ngrok.autoConnect';
     
     // Create status bar item
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
-    statusBarItem.text = "$(cloud) CodeGenie";
-    statusBarItem.tooltip = "Click to configure CodeGenie server connection";
-    statusBarItem.command = 'codegenie.configureServer';
+    statusBarItem.text = "$(cloud) CodeGenie Ngrok";
+    statusBarItem.tooltip = "Click to configure CodeGenie ngrok server connection";
+    statusBarItem.command = 'codegenie-ngrok.configureServer';
     context.subscriptions.push(statusBarItem);
     statusBarItem.show();
     
@@ -59,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register command to configure server
     context.subscriptions.push(
-        vscode.commands.registerCommand('codegenie.configureServer', async () => {
+        vscode.commands.registerCommand('codegenie-ngrok.configureServer', async () => {
             await promptForServerUrl();
         })
     );
@@ -68,14 +66,14 @@ export function activate(context: vscode.ExtensionContext) {
     if (autoConnect && serverUrl) {
         testConnection(serverUrl);
     } else if (!serverUrl) {
-        updateStatusBar("$(cloud) CodeGenie (Not Connected)");
+        updateStatusBar("$(cloud) CodeGenie Ngrok (Not Connected)");
     }
 
     async function promptForServerUrl() {
         const url = await vscode.window.showInputBox({
             value: serverUrl,
             placeHolder: 'https://your-ngrok-url.ngrok.io',
-            prompt: "Enter the CodeGenie server URL (ngrok URL)",
+            prompt: "Enter the CodeGenie ngrok server URL",
             ignoreFocusOut: true
         });
         
@@ -90,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
         try {
             updateStatusBar("$(sync~spin) Testing connection...");
             
-            const response = await fetch(`${url}/connection_info`, {
+            const response = await crossFetch.default(`${url}/connection_info`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -99,32 +97,32 @@ export function activate(context: vscode.ExtensionContext) {
                 throw new Error(`Server returned ${response.status}: ${response.statusText}`);
             }
             
-            const info: ConnectionInfo = await response.json();
+            const info = await response.json();
             
             if (info.status === 'connected') {
                 isConnected = true;
-                updateStatusBar(`$(cloud) CodeGenie (Connected: ${info.model_status})`);
-                vscode.window.showInformationMessage(`Connected to CodeGenie server at ${url}`);
+                updateStatusBar(`$(cloud) CodeGenie Ngrok (Connected: ${info.model_status})`);
+                vscode.window.showInformationMessage(`Connected to CodeGenie ngrok server at ${url}`);
             } else {
                 isConnected = false;
-                updateStatusBar("$(cloud-offline) CodeGenie (Error)");
+                updateStatusBar("$(cloud-offline) CodeGenie Ngrok (Error)");
                 vscode.window.showErrorMessage(`Connection error: ${info.status}`);
             }
         } catch (error) {
             isConnected = false;
-            updateStatusBar("$(cloud-offline) CodeGenie (Not Connected)");
-            vscode.window.showErrorMessage(`Cannot connect to CodeGenie server: ${error instanceof Error ? error.message : String(error)}`);
+            updateStatusBar("$(cloud-offline) CodeGenie Ngrok (Not Connected)");
+            vscode.window.showErrorMessage(`Cannot connect to CodeGenie ngrok server: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 
     // Command to open the Webview Panel
-    let startDisposable = vscode.commands.registerCommand('codegenie.start', () => {
+    let startDisposable = vscode.commands.registerCommand('codegenie-ngrok.start', () => {
         WebviewPanel.createOrShow(context.extensionUri);
     });
 
     // Command to get code completion
-    let completeDisposable = vscode.commands.registerCommand('codegenie.complete', () => {
-        console.log("Command codegenie.complete executed.");
+    let completeDisposable = vscode.commands.registerCommand('codegenie-ngrok.complete', () => {
+        console.log("Command codegenie-ngrok.complete executed.");
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             handleCompletion(editor);
@@ -134,7 +132,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Command to optimize code
-    let optimizeDisposable = vscode.commands.registerCommand('codegenie.optimize', async () => {
+    let optimizeDisposable = vscode.commands.registerCommand('codegenie-ngrok.optimize', async () => {
         if (!ensureConnected()) return;
         
         const editor = vscode.window.activeTextEditor;
@@ -155,7 +153,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const originalCode = editor.document.getText();
     
                 // Making a POST request using fetch
-                const response = await fetch(`${serverUrl}/optimize`, {
+                const response = await crossFetch.default(`${serverUrl}/optimize`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -214,7 +212,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     // Command for filling in the middle
-    let fillMiddleDisposable = vscode.commands.registerCommand('codegenie.fillInTheMiddle', async () => {
+    let fillMiddleDisposable = vscode.commands.registerCommand('codegenie-ngrok.fillInTheMiddle', async () => {
         if (!ensureConnected()) return;
         
         const editor = vscode.window.activeTextEditor;
@@ -251,11 +249,11 @@ export function activate(context: vscode.ExtensionContext) {
         }
         
         // Reset status bar
-        updateStatusBar(isConnected ? "$(cloud) CodeGenie (Connected)" : "$(cloud-offline) CodeGenie (Not Connected)");
+        updateStatusBar(isConnected ? "$(cloud) CodeGenie Ngrok (Connected)" : "$(cloud-offline) CodeGenie Ngrok (Not Connected)");
     });
 
     // Debug code command
-    let debugDisposable = vscode.commands.registerCommand('codegenie.debugCode', async () => {
+    let debugDisposable = vscode.commands.registerCommand('codegenie-ngrok.debugCode', async () => {
         if (!ensureConnected()) return;
         
         const editor = vscode.window.activeTextEditor;
@@ -287,7 +285,7 @@ export function activate(context: vscode.ExtensionContext) {
             }, async (progress) => {
                 progress.report({ message: "Analyzing code..." });
 
-                const response = await fetch(`${serverUrl}/debug`, {
+                const response = await crossFetch.default(`${serverUrl}/debug`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -349,7 +347,7 @@ export function activate(context: vscode.ExtensionContext) {
             console.log("Sending text to API:", text.substring(0, 100) + "...");
             updateStatusBar("$(sync~spin) Generating completion...");
             
-            const response = await fetch(`${serverUrl}/complete`, {
+            const response = await crossFetch.default(`${serverUrl}/complete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -377,7 +375,7 @@ export function activate(context: vscode.ExtensionContext) {
             console.error("Unknown API error:", error);
             throw error;
         } finally {
-            updateStatusBar(isConnected ? "$(cloud) CodeGenie (Connected)" : "$(cloud-offline) CodeGenie (Not Connected)");
+            updateStatusBar(isConnected ? "$(cloud) CodeGenie Ngrok (Connected)" : "$(cloud-offline) CodeGenie Ngrok (Not Connected)");
         }
     }
 
@@ -423,7 +421,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         } finally {
             isProcessing = false;
-            updateStatusBar(isConnected ? "$(cloud) CodeGenie (Connected)" : "$(cloud-offline) CodeGenie (Not Connected)");
+            updateStatusBar(isConnected ? "$(cloud) CodeGenie Ngrok (Connected)" : "$(cloud-offline) CodeGenie Ngrok (Not Connected)");
         }
     }
 
@@ -466,7 +464,7 @@ export function activate(context: vscode.ExtensionContext) {
             // Show status bar for ghost completion
             updateStatusBar("$(sync~spin) Generating suggestion...");
             
-            const res = await fetch(`${serverUrl}/hf-complete`, {
+            const res = await crossFetch.default(`${serverUrl}/hf-complete`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: text }),
@@ -483,13 +481,13 @@ export function activate(context: vscode.ExtensionContext) {
             return '';
         } finally {
             // Reset status bar
-            updateStatusBar(isConnected ? "$(cloud) CodeGenie (Connected)" : "$(cloud-offline) CodeGenie (Not Connected)");
+            updateStatusBar(isConnected ? "$(cloud) CodeGenie Ngrok (Connected)" : "$(cloud-offline) CodeGenie Ngrok (Not Connected)");
         }
     }
 
     // Command to accept ghost suggestion
     context.subscriptions.push(
-        vscode.commands.registerCommand('codegenie.acceptGhostSuggestion', () => {
+        vscode.commands.registerCommand('codegenie-ngrok.acceptGhostSuggestion', () => {
             const editor = vscode.window.activeTextEditor;
             if (editor && currentSuggestion) {
                 isInsertingSuggestion = true;
@@ -548,7 +546,7 @@ export function activate(context: vscode.ExtensionContext) {
         try { 
             updateStatusBar("$(sync~spin) Generating middle fill...");
             
-            const response = await fetch(`${serverUrl}/fill_in_the_middle`, { 
+            const response = await crossFetch.default(`${serverUrl}/fill_in_the_middle`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify({ text }),
@@ -574,12 +572,12 @@ export function activate(context: vscode.ExtensionContext) {
             }
             return '';
         } finally {
-            updateStatusBar(isConnected ? "$(cloud) CodeGenie (Connected)" : "$(cloud-offline) CodeGenie (Not Connected)");
+            updateStatusBar(isConnected ? "$(cloud) CodeGenie Ngrok (Connected)" : "$(cloud-offline) CodeGenie Ngrok (Not Connected)");
         }
     }
 }
 
 export function deactivate() {
-    console.log('CodeGenie extension is now deactivated');
+    console.log('CodeGenie Ngrok extension is now deactivated');
 }
 

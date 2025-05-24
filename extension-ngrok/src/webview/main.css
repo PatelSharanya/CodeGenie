@@ -1,0 +1,109 @@
+/* src/webview/styles.css */
+:root {
+  --vscode-background: var(--vscode-editor-background);
+  --vscode-foreground: var(--vscode-editor-foreground);
+  --vscode-button-background: var(--vscode-button-background);
+  --vscode-button-foreground: var(--vscode-button-foreground);
+  --vscode-button-hover-background: var(--vscode-button-hoverBackground);
+  --vscode-input-background: var(--vscode-input-background);
+  --vscode-input-foreground: var(--vscode-input-foreground);
+  --vscode-input-border: var(--vscode-input-border);
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--vscode-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+.webview-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 16px;
+}
+.history-panel {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  padding: 8px;
+}
+.prompt-item {
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: var(--vscode-input-background);
+}
+.prompt-item .user-prompt {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.prompt-item .ai-response {
+  white-space: pre-wrap;
+}
+.input-container {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--vscode-input-background);
+  border-radius: 4px;
+}
+.input-container textarea {
+  flex: 1;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  resize: vertical;
+}
+.input-container button {
+  padding: 8px 16px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.input-container button:hover {
+  background-color: var(--vscode-button-hover-background);
+}
+.code-lens {
+  position: absolute;
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+.code-lens button {
+  background: none;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.code-lens button:hover {
+  background-color: var(--vscode-button-hover-background);
+}
+.upload-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.upload-button:hover {
+  background-color: var(--vscode-button-hover-background);
+}

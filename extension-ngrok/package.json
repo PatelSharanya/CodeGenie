@@ -1,7 +1,8 @@
 {
-  "name": "codegenie",
-  "displayName": "CodeGenie",
-  "description": "AI-powered code completion and assistance for VSCode using DeepSeek model",
+  "name": "codegenie-ngrok",
+  "publisher": "localdev",
+  "displayName": "CodeGenie Ngrok",
+  "description": "Ngrok server for CodeGenie extension",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.98.0"
@@ -15,85 +16,87 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:codegenie.optimize",
-    "onCommand:codegenie.complete",
-    "onCommand:codegenie.debugCode"
+    "onCommand:codegenie-ngrok.start",
+    "onCommand:codegenie-ngrok.optimize",
+    "onCommand:codegenie-ngrok.complete",
+    "onCommand:codegenie-ngrok.debugCode"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "codegenie.acceptGhostSuggestion",
+        "command": "codegenie-ngrok.acceptGhostSuggestion",
         "title": "Accept Ghost Suggestion"
       },
       {
-        "command": "codegenie.start",
-        "title": "Start CodeGenie"
+        "command": "codegenie-ngrok.start",
+        "title": "Start CodeGenie",
+        "category": "CodeGenie"
       },
       {
-        "command": "codegenie.complete",
+        "command": "codegenie-ngrok.complete",
         "title": "Complete Code with CodeGenie"
       },
       {
-        "command": "codegenie.fillInTheMiddle",
+        "command": "codegenie-ngrok.fillInTheMiddle",
         "title": "Fill Code Gaps with CodeGenie"
       },
       {
-        "command": "codegenie.debugCode",
+        "command": "codegenie-ngrok.debugCode",
         "title": "Debug Selected Code"
       },
       {
-        "command": "codegenie.optimize",
+        "command": "codegenie-ngrok.optimize",
         "title": "Optimize Code"
       },
       {
-        "command": "codegenie.configureServer",
-        "title": "Configure CodeGenie Server"
+        "command": "codegenie-ngrok.configureServer",
+        "title": "Configure CodeGenie Ngrok Server"
       }
     ],
     "keybindings": [
       {
-        "command": "codegenie.complete",
+        "command": "codegenie-ngrok.complete",
         "key": "ctrl+alt+c",
         "mac": "cmd+alt+c",
         "when": "editorTextFocus"
       },
       {
-        "command": "codegenie.acceptGhostSuggestion",
+        "command": "codegenie-ngrok.acceptGhostSuggestion",
         "key": "tab",
         "when": "editorTextFocus"
       },
       {
-        "command": "codegenie.fillInTheMiddle",
+        "command": "codegenie-ngrok.fillInTheMiddle",
         "key": "ctrl+alt+8",
         "mac": "cmd+alt+8",
         "when": "editorTextFocus"
       },
       {
-        "command": "codegenie.debugCode",
+        "command": "codegenie-ngrok.debugCode",
         "key": "ctrl+shift+8",
         "mac": "cmd+shift+8",
         "when": "editorTextFocus"
       },
       {
-        "command": "codegenie.optimize",
+        "command": "codegenie-ngrok.optimize",
         "key": "ctrl+shift+o",
         "mac": "cmd+shift+o",
         "when": "editorTextFocus"
       }
     ],
     "configuration": {
-      "title": "CodeGenie",
+      "title": "CodeGenie Ngrok",
       "properties": {
-        "codegenie.serverUrl": {
+        "codegenie-ngrok.serverUrl": {
           "type": "string",
           "default": "",
-          "description": "URL for the CodeGenie server (ngrok URL)"
+          "description": "URL for the CodeGenie ngrok server"
         },
-        "codegenie.autoConnect": {
+        "codegenie-ngrok.autoConnect": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically connect to the CodeGenie server on startup"
+          "description": "Automatically connect to the CodeGenie ngrok server on startup"
         }
       }
     }
@@ -106,18 +109,25 @@
     "lint": "eslint src",
     "test": "vscode-test",
     "package": "vsce package",
-    "publish": "vsce publish"
+    "publish": "vsce publish",
+    "build:webview": "tsc -p tsconfig.webview.json",
+    "build:extension": "tsc -p tsconfig.json",
+    "build": "npm run build:webview && npm run build:extension",
+    "watch:webview": "tsc -p tsconfig.webview.json --watch",
+    "watch:extension": "tsc -p tsconfig.json --watch"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
-    "@types/vscode": "^1.98.0",
+    "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
+    "@vitejs/plugin-react": "^4.5.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.19.0",
     "typescript": "^5.7.3",
+    "vite": "^6.3.5",
     "vsce": "^2.15.0"
   },
   "dependencies": {
@@ -125,7 +135,8 @@
     "cross-fetch": "^4.1.0",
     "fs-extra": "^11.3.0",
     "marked": "^4.3.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "react": "^18.3.1"
   },
   "repository": {
     "type": "git",
